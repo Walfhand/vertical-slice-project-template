@@ -13,7 +13,9 @@ public class DbContextFactory(
     {
         try
         {
-            return httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IDbContext>();
+            return httpContextAccessor.HttpContext is null
+                ? container.GetRequiredService<IDbContext>()
+                : httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IDbContext>();
         }
         catch
         {
