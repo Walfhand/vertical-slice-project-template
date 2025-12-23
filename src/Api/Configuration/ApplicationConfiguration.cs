@@ -14,7 +14,8 @@ internal static class ApplicationConfiguration
     {
         builder.Host.AddCustomLogging();
         builder.Services.AddCustomProblemDetails();
-        builder.Services.AddMinimalEndpoints();
+        builder.Services.AddMinimalEndpoints(options => { options.SetBaseApiPath("api/v1"); });
+        builder.Services.AddHttpContextAccessor();
         builder.Host.UseCustomWolverine(builder.Configuration, assembly);
 
         builder.Services.AddScoped<IMessage, MessageService>();
