@@ -1,8 +1,11 @@
 <Solution>
-  <Folder Name="/solutionsItems/">
+  <Folder Name="/Solution Items/">
+    <File Path=".env.example" />
     <File Path=".gitignore" />
+    <File Path="docker-compose.yml" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Api/Api.csproj" />
     <Project Path="src/Engine/Engine.csproj" />
   </Folder>
   <Folder Name="/tests/" />
