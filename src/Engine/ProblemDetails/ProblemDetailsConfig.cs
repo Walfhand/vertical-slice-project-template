@@ -1,7 +1,4 @@
-using FluentValidation;
-using Hellang.Middleware.ProblemDetails;
-using Engine.Exceptions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Engine.ProblemDetails;
@@ -11,31 +8,21 @@ public static class ProblemDetailsConfig
     public static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
     {
         services.AddControllers();
+        services.AddExceptionHandler<CustomExceptionHandler>();
         services.AddProblemDetails(options =>
         {
-            options.IncludeExceptionDetails = (ctx, _) => false;
-            options.Map<ValidationException>(ex => new Microsoft.AspNetCore.Mvc.ProblemDetails
+            options.CustomizeProblemDetails = context =>
             {
-                Title = ex.Message,
-                Status = 400,
-                Detail = string.Join(',', ex.Errors.Select(failure => failure.ErrorMessage)),
-                Type = ex.GetType().Name
-            });
-            options.Map<CustomException>(ex => new Microsoft.AspNetCore.Mvc.ProblemDetails
-            {
-                Title = $"A {ex.GetType()} error has occurred",
-                Status = (int)ex.StatusCode,
-                Detail = ex.Message,
-                Type = ex.GetType().Name
-            });
-            options.MapToStatusCode<ArgumentNullException>(StatusCodes.Status400BadRequest);
-            options.Map<Exception>(ex => new Microsoft.AspNetCore.Mvc.ProblemDetails
-            {
-                Title = "An unexpected error has occurred",
-                Status = StatusCodes.Status500InternalServerError,
-                Detail = ex.Message,
-                Type = ex.GetType().Name
-            });
+                context.ProblemDetails.Instance =
+                    $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+
+                context.ProblemDetails.Extensions.TryAdd(
+                    "requestId",
+                    context.HttpContext.TraceIdentifier);
+
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
         });
         return services;
     }
