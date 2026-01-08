@@ -23,4 +23,9 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Domain\Orders\AggregateRoots\" />
+      <Folder Include="Infrastructure\Persistence\Migrations\" />
+    </ItemGroup>
+
 </Project>
