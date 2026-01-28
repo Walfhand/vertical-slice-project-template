@@ -1,3 +1,4 @@
+using Api.Domain.Orders.AggregateRoots;
 using Engine.Wolverine;
 using Engine.Wolverine.Factory;
 using Microsoft.AspNetCore.Mvc;
@@ -9,27 +10,34 @@ public sealed record Request
 {
     [FromBody] public RequestBody Body { get; set; } = null!;
 
-    public sealed record RequestBody(string CustomerId, decimal Total);
+    public sealed record RequestBody
+    {
+        public List<OrderLineDto> OrderLines { get; set; } = null!;
+    }
 }
 
-public sealed record Response(Guid OrderId, string Status, DateTimeOffset CreatedAt);
+public record OrderLineDto(int ProductId, int Quantity);
+
+public sealed record Response(Guid OrderId);
 
 public class CreateOrder
 {
-    public sealed class CreateOrderEndpoint()
-        : PostMinimalEndpoint<Request, Response>("orders");
 }
+
+public sealed class CreateOrderEndpoint()
+    : PostMinimalEndpoint<Request, Response>("orders");
 
 public sealed class CreateRequestHandler(
     IAppDbContextFactory dbContextFactory,
     IHttpContextAccessor contextAccessor)
     : Handler(dbContextFactory, contextAccessor)
 {
-    public Response Handle(Request request)
+    public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
     {
-        return new Response(
-            Guid.NewGuid(),
-            "Created",
-            DateTimeOffset.UtcNow);
+        var order = Order.Create();
+        foreach (var orderLine in request.Body.OrderLines) order.AddLine(orderLine.ProductId, orderLine.Quantity);
+
+        await DbContext.Set<Order>().AddAsync(order, cancellationToken);
+        return new Response(order.Id);
     }
 }

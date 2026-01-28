@@ -11,4 +11,4 @@ services:
     env_file:
       - .env.example
     ports:
-      - "$HOSTING_PORT:5432"
+      - "5432:5432"
