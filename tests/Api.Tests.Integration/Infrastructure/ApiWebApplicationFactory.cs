@@ -23,6 +23,7 @@ public sealed class ApiWebApplicationFactory : WebApplicationFactory<Program>
         {
             var settings = new Dictionary<string, string?>
             {
+                ["Postgres:ConnexionString"] = _connectionString
                 //configure settings here
             };
 
