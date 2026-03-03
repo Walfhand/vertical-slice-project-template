@@ -20,9 +20,9 @@ public record OrderLine
     public static OrderLine Create(int quantity, int productId)
     {
         if (quantity < 1)
-            throw new DomainException("Quantity cannot be less than 1");
+            throw new DomainException("Quantity cannot be less than 1", "");
         return productId < 1
-            ? throw new DomainException("ProductId cannot be less than 1")
+            ? throw new DomainException("ProductId cannot be less than 1", "")
             : new OrderLine(quantity, productId);
     }
 }

@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Infrastructure.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : AppDbContextBase(options, "dbo")
+public class AppDbContext(DbContextOptions<AppDbContext> options, TimeProvider timeProvider)
+    : AppDbContextBase(options, "dbo", timeProvider)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -17,8 +18,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : AppDbContext
 
 public class AppDbContextDesignTimeFactory : DbContextDesignTimeFactory<AppDbContext>
 {
-    protected override AppDbContext CreateContext(DbContextOptions<AppDbContext> options)
+    protected override AppDbContext CreateContext(DbContextOptions<AppDbContext> options, TimeProvider timeProvider)
     {
-        return new AppDbContext(options);
+        return new AppDbContext(options, timeProvider);
     }
 }

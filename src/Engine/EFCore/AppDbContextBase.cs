@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Engine.EFCore;
 
-public abstract class AppDbContextBase(DbContextOptions options, string schema) : DbContext(options), IDbContext
+public abstract class AppDbContextBase(DbContextOptions options, string schema, TimeProvider timeProvider)
+    : DbContext(options), IDbContext
 {
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
@@ -28,15 +29,16 @@ public abstract class AppDbContextBase(DbContextOptions options, string schema) 
     {
         try
         {
+            var now = timeProvider.GetUtcNow().UtcDateTime;
             foreach (var entry in ChangeTracker.Entries<IAudit>())
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.Now;
+                        entry.Entity.CreatedAt = now;
                         entry.Entity.Version = 1;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModified = DateTime.Now;
+                        entry.Entity.LastModified = now;
                         entry.Entity.Version++;
                         break;
                     case EntityState.Detached:

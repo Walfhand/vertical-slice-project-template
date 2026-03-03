@@ -4,11 +4,11 @@ namespace Engine.Exceptions;
 
 public class NotFoundException : CustomException
 {
-    public NotFoundException(string message) : base(message, HttpStatusCode.NotFound)
+    public NotFoundException(string message) : base(message, "NOT_FOUND", HttpStatusCode.NotFound)
     {
     }
 
-    public NotFoundException() : base("", HttpStatusCode.NotFound)
+    public NotFoundException() : base("", "NOT_FOUND", HttpStatusCode.NotFound)
     {
     }
 }

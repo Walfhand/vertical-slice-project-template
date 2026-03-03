@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.ErrorHandling;
+using Wolverine.FluentValidation;
 using Wolverine.Postgresql;
 
 namespace Engine.Wolverine;
@@ -49,6 +50,7 @@ public static class WolverineConfig
             opts.Policies.OnException<Exception>()
                 .RetryTimes(1);
 
+            opts.UseFluentValidation(RegistrationBehavior.ExplicitRegistration);
             opts.Policies.AddMiddleware<DomainEventDispatcherMiddleWare>();
 
             opts.ApplicationAssembly = assembly;

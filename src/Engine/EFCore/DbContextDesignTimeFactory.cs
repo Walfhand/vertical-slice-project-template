@@ -15,8 +15,8 @@ public abstract class DbContextDesignTimeFactory<TContext> : IDesignTimeDbContex
                 dbOptions => { dbOptions.MigrationsAssembly(typeof(TContext).Assembly.GetName().Name); })
             .UseSnakeCaseNamingConvention();
 
-        return CreateContext(optionsBuilder.Options);
+        return CreateContext(optionsBuilder.Options, TimeProvider.System);
     }
 
-    protected abstract TContext CreateContext(DbContextOptions<TContext> options);
+    protected abstract TContext CreateContext(DbContextOptions<TContext> options, TimeProvider timeProvider);
 }
